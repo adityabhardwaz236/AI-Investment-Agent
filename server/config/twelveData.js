@@ -1,0 +1,1 @@
+export const TWELVE_BASE_URL = "https://api.twelvedata.com";
