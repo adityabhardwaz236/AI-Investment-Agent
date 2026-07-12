@@ -12,7 +12,25 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  process.env.CLIENT_URL,
+].filter(Boolean);
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      // Allow requests without an Origin, such as Postman
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("CORS: origin not allowed"));
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use("/api/compare", compareRoutes);
 app.get("/", (req, res) => {
