@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+
 import investmentRoutes from "./routes/investmentRoutes.js";
 import marketRoutes from "./routes/marketRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
@@ -20,19 +21,23 @@ const allowedOrigins = [
 
 app.use(
   cors({
-    origin(origin, callback) {
-      // Allow requests without an Origin, such as Postman
+    origin: (origin, callback) => {
       if (!origin || allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
 
-      return callback(new Error("CORS: origin not allowed"));
+      console.error("Blocked by CORS:", origin);
+
+      return callback(
+        new Error(`CORS blocked this origin: ${origin}`)
+      );
     },
     credentials: true,
   })
 );
+
 app.use(express.json());
-app.use("/api/compare", compareRoutes);
+
 app.get("/", (req, res) => {
   res.json({
     success: true,
@@ -44,6 +49,7 @@ app.use("/api/investment", investmentRoutes);
 app.use("/api/market", marketRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/favorites", favoriteRoutes);
+app.use("/api/compare", compareRoutes);
 app.use("/api/chat", chatRoutes);
 
 export default app;
